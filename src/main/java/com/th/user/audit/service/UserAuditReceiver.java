@@ -19,9 +19,12 @@ public class UserAuditReceiver {
     @Autowired
     private UserAuditService userAuditService;
 
+    @Autowired
+    private SequenceGeneratorService sequenceGeneratorService;
+
     @JmsListener(destination = "${user.audit.topic}", containerFactory = "defaultJmsListenerContainerFactory")
     public void receiveUserAudit(UserAuditRq userAuditRq) {
-        userAuditService.save(UserAudit.builder().srcAcctNo(userAuditRq.getSrcAcctNo()).destNo(userAuditRq.getDestNo())
+        userAuditService.save(UserAudit.builder().id(sequenceGeneratorService.generateSequence(UserAudit.SEQUENCE_NAME)).srcAcctNo(userAuditRq.getSrcAcctNo()).destNo(userAuditRq.getDestNo())
                 .refNo(userAuditRq.getRefNo()).activity(userAuditRq.getActivity()).result(userAuditRq.getResult()).build());
     }
 
